@@ -1,6 +1,6 @@
 package com.ydg.project.be.lottofinder.service;
 
-import com.ydg.project.be.lottofinder.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
 import com.ydg.project.be.lottofinder.extractor.LottoResultExtractor;
@@ -29,13 +29,13 @@ public class LottoSaveService {
     private final WinStoreExtractor winStoreExtractor;
 
     private final ReactiveMongoTemplate mongoTemplate;
+    private final LottoInfoService lottoInfoService;
 
     public void saveWinStore(int round) throws IOException {
         winStoreExtractor.getWinStoreDto(round)
-                .map((winStoreDto) -> {
-                    return saveWinStore(winStoreDto, round);
-                }).flatMap(winStoreRepository::save)
-                .subscribe();
+                .map((winStoreDto) -> saveWinStore(winStoreDto, round))
+                .flatMap(winStoreRepository::save)
+                .subscribe(); // 즉시 저장
     }
 
     @Transactional
@@ -43,7 +43,12 @@ public class LottoSaveService {
         lottoResultExtractor.getLottoResult(round)
                 .map(EntityDtoUtil::toEntity)
                 .flatMap(lottoResultRepository::save)
-                .subscribe();
+                .map(result -> {
+                    // 최신의 로또 round 갱신
+                    lottoInfoService.updateLatestLottoRound(result.getRound());
+                    return result;
+                })
+                .subscribe(); // 즉시저장
     }
 
     private WinStoreEntity saveWinStore(WinStoreDto winStoreDto, int round) {
@@ -52,7 +57,7 @@ public class LottoSaveService {
         Criteria criteria = Criteria.where("storeFid").is(winStoreDto.getStoreFId());
         Update update = new Update().push("winRounds", round);
 
-        // 즉시 저장
+        // 당첨가게의 회차수의 배열에 해당 라운드 추가.
         mongoTemplate.updateFirst(Query.query(criteria), update,  LottoStoreEntity.class).subscribe();
 
         return winStore;

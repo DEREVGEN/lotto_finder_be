@@ -2,7 +2,7 @@ package com.ydg.project.be.lottofinder.extractor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ydg.project.be.lottofinder.dto.LottoResultDto;
+import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;

@@ -1,6 +1,7 @@
 package com.ydg.project.be.lottofinder.entity;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 @Document("lottoResult")
 @Getter
+@ToString
 public class LottoResultEntity {
 
     @Id

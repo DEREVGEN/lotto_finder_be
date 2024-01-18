@@ -1,6 +1,6 @@
 package com.ydg.project.be.lottofinder.extractor;
 
-import com.ydg.project.be.lottofinder.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

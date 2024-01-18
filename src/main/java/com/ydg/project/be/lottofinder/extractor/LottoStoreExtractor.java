@@ -2,7 +2,7 @@ package com.ydg.project.be.lottofinder.extractor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ydg.project.be.lottofinder.dto.LottoStoreDto;
+import com.ydg.project.be.lottofinder.batch.dto.LottoStoreDto;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

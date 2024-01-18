@@ -1,4 +1,4 @@
-package com.ydg.project.be.lottofinder.dto;
+package com.ydg.project.be.lottofinder.batch.dto;
 
 import lombok.Getter;
 import lombok.Setter;

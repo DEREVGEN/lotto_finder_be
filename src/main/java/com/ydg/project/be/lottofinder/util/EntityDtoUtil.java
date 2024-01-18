@@ -2,9 +2,10 @@ package com.ydg.project.be.lottofinder.util;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
-import com.ydg.project.be.lottofinder.dto.LottoResultDto;
-import com.ydg.project.be.lottofinder.dto.LottoStoreDto;
-import com.ydg.project.be.lottofinder.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
+import com.ydg.project.be.lottofinder.batch.dto.LottoStoreDto;
+import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
@@ -57,6 +58,17 @@ public class EntityDtoUtil {
         WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), round, winStoreDto.getStoreFId());
 
         return winStore;
+    }
+
+    public static LottoResultResDto toDto(LottoResultEntity resultEntity) {
+        LottoResultResDto resultResDto = new LottoResultResDto();
+
+        resultResDto.setDate(resultEntity.getDate());
+        resultResDto.setRound(resultEntity.getRound());
+        resultResDto.setLottoNumbers(resultEntity.getWinNums());
+        resultResDto.setWinPrize(resultEntity.getWinPrize());
+
+        return resultResDto;
     }
 
 
