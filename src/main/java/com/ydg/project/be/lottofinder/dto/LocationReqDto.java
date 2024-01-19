@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Setter
 @Getter
-public class LocationResDto {
+public class LocationReqDto {
 
     @Range(min = -90, max = 90, message = "out of range")
     double lat;

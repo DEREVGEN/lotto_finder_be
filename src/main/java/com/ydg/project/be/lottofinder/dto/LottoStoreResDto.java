@@ -1,5 +1,6 @@
 package com.ydg.project.be.lottofinder.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class StoreInfoDto {
+@Builder
+public class LottoStoreResDto {
 
     String storeName;
     String address;

@@ -1,14 +1,17 @@
 package com.ydg.project.be.lottofinder.util;
 
-import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import com.ydg.project.be.lottofinder.batch.dto.LottoStoreDto;
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
+import com.ydg.project.be.lottofinder.dto.LottoStoreResDto;
+import com.ydg.project.be.lottofinder.dto.WinStoreResDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
 import java.util.List;
 
@@ -37,21 +40,17 @@ public class EntityDtoUtil {
     }
 
     public static LottoStoreEntity toEntity(LottoStoreDto storeDto) {
-        Point storeLocation = getPoint(storeDto.getLat(), storeDto.getLng());
+        GeoJsonPoint geoJsonPoint = new GeoJsonPoint(storeDto.getLng(), storeDto.getLat());
 
         LottoStoreEntity lottoStore = new LottoStoreEntity(
                 storeDto.getName(),
                 storeDto.getAddress(),
                 storeDto.getTel(),
                 storeDto.getStoreFid(),
-                storeLocation
+                geoJsonPoint
         );
 
         return lottoStore;
-    }
-
-    private static Point getPoint(double lng, double lat) {
-        return new Point(new Position(List.of(lat, lng)));
     }
 
     public static WinStoreEntity toEntity(WinStoreDto winStoreDto, int round) {
@@ -69,6 +68,29 @@ public class EntityDtoUtil {
         resultResDto.setWinPrize(resultEntity.getWinPrize());
 
         return resultResDto;
+    }
+
+    public static WinStoreResDto toDto(WinStoreEntity winStoreEntity, LottoStoreEntity storeEntity) {
+
+        LottoStoreResDto lottoStoreDto = toDto(storeEntity);
+
+        WinStoreResDto winStoreDto = new WinStoreResDto();
+        winStoreDto.setAuto(winStoreEntity.isAuto());
+        winStoreDto.setRound(winStoreEntity.getRound());
+        winStoreDto.setLottoStore(lottoStoreDto);
+
+        return winStoreDto;
+    }
+
+    public static LottoStoreResDto toDto(LottoStoreEntity storeEntity) {
+        return LottoStoreResDto.builder()
+                .storeName(storeEntity.getStoreName())
+                .tel(storeEntity.getTel())
+                .lat(storeEntity.getLocation().getY())
+                .lng(storeEntity.getLocation().getX())
+                .address(storeEntity.getAddress())
+                .winRounds(storeEntity.getWinRounds())
+                .build();
     }
 
 
