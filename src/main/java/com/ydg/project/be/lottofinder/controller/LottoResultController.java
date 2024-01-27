@@ -23,9 +23,21 @@ public class LottoResultController {
                 .getRecentLottoResult();
     }
 
+    @GetMapping("recent/multiple")
+    public Mono<LottoResultResDto> getRecentLottoResults() {
+        return infoService
+                .getRecentLottoResults();
+    }
+
     @GetMapping("{round}")
     public Mono<LottoResultResDto> getLottoResult(@PathVariable("round") int round) {
         return infoService
                 .getLottoResult(round);
+    }
+
+    @GetMapping("{round}/multiple")
+    public Mono<LottoResultResDto> getLottoResults(@PathVariable("round") int round) {
+        return infoService
+                .getLottoResults(round);
     }
 }

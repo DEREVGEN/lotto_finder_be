@@ -5,6 +5,7 @@ import com.ydg.project.be.lottofinder.dto.LocationReqDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.dto.LottoStoreResDto;
 import com.ydg.project.be.lottofinder.dto.WinStoreResDto;
+import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
@@ -38,15 +39,44 @@ public class LottoInfoService {
     }
 
     public Mono<LottoResultResDto> getRecentLottoResult() {
-        return resultRepository
-                .findTopByOrderByRoundDesc()
-                .map(EntityDtoUtil::toDto);
+        return getLottoResult(latestLottoRound);
+    }
+
+    public Mono<LottoResultResDto> getRecentLottoResults() {
+        return getLottoResults(latestLottoRound);
     }
 
     public Mono<LottoResultResDto> getLottoResult(int round) {
         return resultRepository
                 .findByRound(round)
                 .map(EntityDtoUtil::toDto);
+    }
+
+    public Mono<LottoResultResDto> getLottoResults(int round) {
+
+        // 최소 조회 가능한 회차는 906회차부터 가능
+        int findRound = Math.max(round, 906);
+
+         return resultRepository
+                 .findTop7ByOrderByRoundDesc(findRound)
+                 .flatMap(lottoResultEntity -> Flux.just(EntityDtoUtil.toDto(lottoResultEntity)))
+                 .collectList()
+                 .map(lottoResultResDtos -> {
+                     LottoResultResDto resultResDto = new LottoResultResDto();
+
+                     for (LottoResultResDto lottoResultResDto : lottoResultResDtos) {
+                         if (lottoResultResDto.getRound() == round) {
+                             resultResDto.setLottoNumbers(lottoResultResDto.getLottoNumbers());
+                             resultResDto.setDate(lottoResultResDto.getDate());
+                             resultResDto.setWinPrize(lottoResultResDto.getWinPrize());
+                             resultResDto.setRound(lottoResultResDto.getRound());
+                         } else {
+                             resultResDto.addLottoResult(lottoResultResDto);
+                         }
+                     }
+
+                     return resultResDto;
+                 });
     }
 
     @Transactional

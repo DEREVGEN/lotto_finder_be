@@ -14,7 +14,7 @@ public class LottoRoundInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // 최신 데이터 불러옴
+        // 최신 회차 데이터를 유지 시키기 위한 로직
         lottoResultRepository.findTopByOrderByRoundDesc()
                 .map(lottoResult -> {
                     // 최신 회차데이터 초기화
