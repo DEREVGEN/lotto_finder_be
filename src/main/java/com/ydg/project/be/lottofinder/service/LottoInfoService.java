@@ -58,7 +58,7 @@ public class LottoInfoService {
         int findRound = Math.max(round, 906);
 
          return resultRepository
-                 .findTop7ByOrderByRoundDesc(findRound)
+                 .findTop7ByRoundLessThanEqualOrderByRoundDesc(findRound)
                  .flatMap(lottoResultEntity -> Flux.just(EntityDtoUtil.toDto(lottoResultEntity)))
                  .collectList()
                  .map(lottoResultResDtos -> {
@@ -74,7 +74,6 @@ public class LottoInfoService {
                              resultResDto.addLottoResult(lottoResultResDto);
                          }
                      }
-
                      return resultResDto;
                  });
     }
