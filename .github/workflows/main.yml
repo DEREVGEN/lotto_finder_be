@@ -46,8 +46,8 @@
             username: ${{ secrets.SSH_USERNAME }}
             key: ${{ secrets.SSH_KEY }}
             script: |
-              docker stop lottofinder
-              docker rm lottofinder
-              docker image rm $(docker images -q)
-              docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-              docker run -d -p 8080:8080 --name lottofinder ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
+              sudo docker stop lottofinder
+              sudo docker rm lottofinder
+              sudo docker image rm $(docker images -q)
+              sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+              sudo docker run -d -p 8080:8080 --name lottofinder ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
