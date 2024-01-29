@@ -22,7 +22,7 @@
         - name: make application-db.properties
           run: |
             touch ./src/main/resources/application-prod.yaml
-            echo "${{ secrets.PROPERTIES_DEPLOY }}" > ./src/main/resources/application-prod.yaml
+            echo "${{ secrets.PROPERTIES_DEPLOY }}" > ./src/main/resources/application-deploy.yaml
 
         - name: test
           run: |
