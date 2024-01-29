@@ -38,3 +38,15 @@
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker build -t ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest .
             docker push ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
+
+        - name: deploy
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USERNAME }}
+            key: ${{ secrets.SSH_KEY }}
+            script: |
+              docker stop lottofinder
+              docker rm lottofinder
+              docker image rm $(docker images -q)
+              docker run -d -p 8080:8080 --name lottofinder ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
