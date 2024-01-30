@@ -48,6 +48,6 @@
             script: |
               sudo docker stop lottofinder
               sudo docker rm lottofinder
-              sudo docker image rm $(docker images -q)
+              sudo docker image rm ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
               sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
               sudo docker run -d -p 8080:8080 --name lottofinder ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
