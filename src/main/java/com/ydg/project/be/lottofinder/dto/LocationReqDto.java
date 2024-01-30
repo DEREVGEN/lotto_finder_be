@@ -11,7 +11,7 @@ public class LocationReqDto {
     @Range(min = -90, max = 90, message = "out of range")
     double lat;
     @Range(min = -180, max = 180, message = "out of range")
-    double lon;
+    double lng;
 }
 
 
