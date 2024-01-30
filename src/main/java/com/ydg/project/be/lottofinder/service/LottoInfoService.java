@@ -1,20 +1,14 @@
 package com.ydg.project.be.lottofinder.service;
 
-import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import com.ydg.project.be.lottofinder.dto.LocationReqDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.dto.LottoStoreResDto;
 import com.ydg.project.be.lottofinder.dto.WinStoreResDto;
-import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +89,7 @@ public class LottoInfoService {
 
     @Transactional
     public Flux<LottoStoreResDto> getLottoStoreNearUser(LocationReqDto locationReqDto) {
-        GeoJsonPoint location = new GeoJsonPoint(locationReqDto.getLon(), locationReqDto.getLat());
+        GeoJsonPoint location = new GeoJsonPoint(locationReqDto.getLng(), locationReqDto.getLat());
 
         return storeRepository
                 .findByLocationNearAndWinRoundsNotEmpty(location, 10000)
