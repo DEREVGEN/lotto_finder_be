@@ -1,12 +1,13 @@
-package com.ydg.project.be.lottofinder.service;
+package com.ydg.project.be.lottofinder.batch.service;
 
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
-import com.ydg.project.be.lottofinder.extractor.LottoResultExtractor;
-import com.ydg.project.be.lottofinder.extractor.WinStoreExtractor;
+import com.ydg.project.be.lottofinder.batch.extractor.LottoResultExtractor;
+import com.ydg.project.be.lottofinder.batch.extractor.WinStoreExtractor;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
+import com.ydg.project.be.lottofinder.service.LottoInfoService;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -31,6 +32,7 @@ public class LottoSaveService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final LottoInfoService lottoInfoService;
 
+    @Transactional
     public void saveWinStore(int round) throws IOException {
         winStoreExtractor.getWinStoreDto(round)
                 .map((winStoreDto) -> saveWinStore(winStoreDto, round))
@@ -51,7 +53,8 @@ public class LottoSaveService {
                 .subscribe(); // 즉시저장
     }
 
-    private WinStoreEntity saveWinStore(WinStoreDto winStoreDto, int round) {
+    @Transactional
+    public WinStoreEntity saveWinStore(WinStoreDto winStoreDto, int round) {
         WinStoreEntity winStore = EntityDtoUtil.toEntity(winStoreDto, round);
 
         Criteria criteria = Criteria.where("storeFid").is(winStoreDto.getStoreFId());

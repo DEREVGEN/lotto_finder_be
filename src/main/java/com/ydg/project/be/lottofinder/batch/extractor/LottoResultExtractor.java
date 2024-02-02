@@ -1,4 +1,4 @@
-package com.ydg.project.be.lottofinder.extractor;
+package com.ydg.project.be.lottofinder.batch.extractor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

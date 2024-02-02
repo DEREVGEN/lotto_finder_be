@@ -8,6 +8,7 @@ import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class LottoInfoService {
 
 
     // 로또의 최신 회차를 담는 변수
+    @Getter
     private int latestLottoRound = -1;
 
     public void updateLatestLottoRound(int round) {

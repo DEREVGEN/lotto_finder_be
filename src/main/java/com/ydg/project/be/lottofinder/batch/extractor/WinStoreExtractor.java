@@ -1,4 +1,4 @@
-package com.ydg.project.be.lottofinder.extractor;
+package com.ydg.project.be.lottofinder.batch.extractor;
 
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import org.jsoup.Jsoup;
