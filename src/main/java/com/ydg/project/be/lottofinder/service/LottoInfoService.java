@@ -4,6 +4,7 @@ import com.ydg.project.be.lottofinder.dto.LocationReqDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.dto.LottoStoreResDto;
 import com.ydg.project.be.lottofinder.dto.WinStoreResDto;
+import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +38,16 @@ public class LottoInfoService {
     }
 
     public Mono<LottoResultResDto> getRecentLottoResult() {
-        return getLottoResult(latestLottoRound);
+        return resultRepository
+                .findTopByOrderByRoundDesc()
+                .map(EntityDtoUtil::toDto);
     }
 
     public Mono<LottoResultResDto> getRecentLottoResults() {
-        return getLottoResults(latestLottoRound);
+        return resultRepository
+                .findTop7ByOrderByRoundDesc()
+                .collectList()
+                .map(this::buildToDto);
     }
 
     public Mono<LottoResultResDto> getLottoResult(int round) {
@@ -49,29 +57,29 @@ public class LottoInfoService {
     }
 
     public Mono<LottoResultResDto> getLottoResults(int round) {
-
-        // 최소 조회 가능한 회차는 906회차부터 가능
-        int findRound = Math.max(round, 906);
-
          return resultRepository
-                 .findTop7ByRoundLessThanEqualOrderByRoundDesc(findRound)
-                 .flatMap(lottoResultEntity -> Flux.just(EntityDtoUtil.toDto(lottoResultEntity)))
+                 .findTop7ByRoundLessThanEqualOrderByRoundDesc(round)
                  .collectList()
-                 .map(lottoResultResDtos -> {
-                     LottoResultResDto resultResDto = new LottoResultResDto();
+                 .map(this::buildToDto);
+    }
 
-                     for (LottoResultResDto lottoResultResDto : lottoResultResDtos) {
-                         if (lottoResultResDto.getRound() == round) {
-                             resultResDto.setLottoNumbers(lottoResultResDto.getLottoNumbers());
-                             resultResDto.setDate(lottoResultResDto.getDate());
-                             resultResDto.setWinPrize(lottoResultResDto.getWinPrize());
-                             resultResDto.setRound(lottoResultResDto.getRound());
-                         } else {
-                             resultResDto.addLottoResult(lottoResultResDto);
-                         }
-                     }
-                     return resultResDto;
-                 });
+    private LottoResultResDto buildToDto(List<LottoResultEntity> lottoResultEntityList) {
+        LottoResultResDto resultResDto = new LottoResultResDto();
+
+        for (int i = 0; i < lottoResultEntityList.size(); i++) {
+            LottoResultResDto lottoResultResDto = EntityDtoUtil.toDto(lottoResultEntityList.get(i));
+
+            if (i == 0) {
+                resultResDto.setLottoNumbers(lottoResultResDto.getLottoNumbers());
+                resultResDto.setDate(lottoResultResDto.getDate());
+                resultResDto.setWinPrize(lottoResultResDto.getWinPrize());
+                resultResDto.setRound(lottoResultResDto.getRound());
+            } else {
+                resultResDto.addLottoResult(lottoResultResDto);
+            }
+        }
+
+        return resultResDto;
     }
 
     @Transactional
