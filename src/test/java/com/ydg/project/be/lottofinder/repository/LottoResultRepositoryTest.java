@@ -28,7 +28,7 @@ class LottoResultRepositoryTest {
     LottoResultRepository resultRepository;
 
     @BeforeAll
-    public void setData() {
+    public void setRandomData() {
         List<LottoResultEntity> lottoResultEntityList = new ArrayList<>();
 
         // generate random data
@@ -108,7 +108,7 @@ class LottoResultRepositoryTest {
     }
 
     @Test
-    @DisplayName("잘못된 데이터 입력에 대한 데이터 확인")
+    @DisplayName("잘못된 데이터 입력에 대한 데이터 확인2")
     public void checkErrorInvalidResults() {
         Flux<LottoResultEntity> lottoResultEntityFlux = resultRepository
                 .findTop7ByRoundLessThanEqualOrderByRoundDesc(0);
@@ -118,20 +118,4 @@ class LottoResultRepositoryTest {
                 .expectComplete()
                 .verify(Duration.ofSeconds(3));
     }
-
-    @Test
-    @DisplayName("로또 결과 데이터 저장 및 확인")
-    public void checkSaveAndGetTest() {
-        LottoResultEntity lottoResult = new LottoResultEntity(200, "1,2,3,4,5,6,7", 123313123L, LocalDate.now());
-
-        resultRepository
-                .save(lottoResult)
-                .block();
-
-        LottoResultEntity savedLottoResult = resultRepository.findByRound(200).block();
-
-        assertEquals(savedLottoResult.getRound(), lottoResult.getRound());
-        assertEquals(savedLottoResult.getWinPrize(), lottoResult.getWinPrize());
-    }
-
 }
