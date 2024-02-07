@@ -11,5 +11,4 @@ import reactor.core.publisher.Mono;
 public interface LottoStoreRepository extends ReactiveMongoRepository<LottoStoreEntity, String>, LottoStoreCustomRepository {
 
     Mono<LottoStoreEntity> findByStoreFid(int storeFid);
-
 }

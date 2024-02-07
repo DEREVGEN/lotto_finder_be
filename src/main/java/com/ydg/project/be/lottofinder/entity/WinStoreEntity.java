@@ -1,11 +1,13 @@
 package com.ydg.project.be.lottofinder.entity;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("winStore")
 @Getter
+@ToString
 public class WinStoreEntity {
 
     @Id

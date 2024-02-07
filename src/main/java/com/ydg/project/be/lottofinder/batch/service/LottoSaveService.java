@@ -5,9 +5,9 @@ import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
 import com.ydg.project.be.lottofinder.batch.extractor.LottoResultExtractor;
 import com.ydg.project.be.lottofinder.batch.extractor.WinStoreExtractor;
+import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
-import com.ydg.project.be.lottofinder.service.LottoInfoService;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -30,7 +30,7 @@ public class LottoSaveService {
     private final WinStoreExtractor winStoreExtractor;
 
     private final ReactiveMongoTemplate mongoTemplate;
-    private final LottoInfoService lottoInfoService;
+    private final RecentRoundProvider recentRoundProvider;
 
     @Transactional
     public void saveWinStore(int round) throws IOException {
@@ -47,7 +47,7 @@ public class LottoSaveService {
                 .flatMap(lottoResultRepository::save)
                 .map(result -> {
                     // 최신의 로또 round 갱신
-                    lottoInfoService.updateLatestLottoRound(result.getRound());
+                    recentRoundProvider.updateRound(result.getRound());
                     return result;
                 })
                 .subscribe(); // 즉시저장

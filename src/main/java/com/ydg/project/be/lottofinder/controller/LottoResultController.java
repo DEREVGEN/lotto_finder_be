@@ -1,8 +1,6 @@
 package com.ydg.project.be.lottofinder.controller;
 
-import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
-import com.ydg.project.be.lottofinder.service.LottoInfoService;
 import com.ydg.project.be.lottofinder.service.LottoResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
