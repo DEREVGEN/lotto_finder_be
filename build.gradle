@@ -33,6 +33,8 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.14.0'
 	implementation 'org.jsoup:jsoup:1.17.2'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.1'
+	testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo.spring30x', version: '4.11.0'
+
 
 }
 

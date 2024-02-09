@@ -1,8 +1,7 @@
 package com.ydg.project.be.lottofinder.controller;
 
-import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
-import com.ydg.project.be.lottofinder.service.LottoInfoService;
+import com.ydg.project.be.lottofinder.service.LottoResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,29 +14,29 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class LottoResultController {
 
-    private final LottoInfoService infoService;
+    private final LottoResultService resultService;
 
     @GetMapping("recent")
     public Mono<LottoResultResDto> getRecentLottoResult() {
-        return infoService
+        return resultService
                 .getRecentLottoResult();
     }
 
     @GetMapping("recent/multiple")
     public Mono<LottoResultResDto> getRecentLottoResults() {
-        return infoService
+        return resultService
                 .getRecentLottoResults();
     }
 
     @GetMapping("{round}")
     public Mono<LottoResultResDto> getLottoResult(@PathVariable("round") int round) {
-        return infoService
+        return resultService
                 .getLottoResult(round);
     }
 
     @GetMapping("{round}/multiple")
     public Mono<LottoResultResDto> getLottoResults(@PathVariable("round") int round) {
-        return infoService
+        return resultService
                 .getLottoResults(round);
     }
 }

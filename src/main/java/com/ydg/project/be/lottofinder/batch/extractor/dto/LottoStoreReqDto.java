@@ -1,4 +1,4 @@
-package com.ydg.project.be.lottofinder.extractor.dto;
+package com.ydg.project.be.lottofinder.batch.extractor.dto;
 
 public class LottoStoreReqDto {
 
