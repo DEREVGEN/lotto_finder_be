@@ -3,6 +3,8 @@ package com.ydg.project.be.lottofinder.batch.extractor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
@@ -36,6 +38,10 @@ public class LottoResultExtractor {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         JsonNode lottoResultJson = om.readTree(response.body());
+
+        if (!lottoResultJson.get("returnValue").textValue().equals("success")) {
+            return Mono.error(new RuntimeException("can not parsing result of round : " + round));
+        }
 
         LottoResultDto lottoResultDto = new LottoResultDto();
         lottoResultDto.setN1(lottoResultJson.get("drwtNo1").asInt());
