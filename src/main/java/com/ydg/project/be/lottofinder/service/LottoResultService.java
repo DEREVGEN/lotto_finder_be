@@ -2,6 +2,7 @@ package com.ydg.project.be.lottofinder.service;
 
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
+import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +16,14 @@ import java.util.List;
 public class LottoResultService {
 
     private final LottoResultRepository resultRepository;
+    private final RecentRoundProvider recentRoundProvider;
 
     public Mono<LottoResultResDto> getRecentLottoResult() {
-        return resultRepository
-                .findTopByOrderByRoundDesc()
-                .map(EntityDtoUtil::toDto);
+        return getLottoResult(recentRoundProvider.getLatestLottoRound());
     }
 
     public Mono<LottoResultResDto> getRecentLottoResults() {
-        return resultRepository
-                .findTop7ByOrderByRoundDesc()
-                .collectList()
-                .map(this::buildToDto);
+        return getLottoResults(recentRoundProvider.getLatestLottoRound());
     }
 
     public Mono<LottoResultResDto> getLottoResult(int round) {
