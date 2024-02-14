@@ -2,6 +2,7 @@ package com.ydg.project.be.lottofinder.service;
 
 import com.ydg.project.be.lottofinder.dto.LottoResultResDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
+import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -32,12 +33,16 @@ class LottoResultServiceTest {
     @MockBean
     LottoResultRepository resultRepository;
 
+    @Autowired
+    RecentRoundProvider roundProvider;
+
     @Test
     @DisplayName("Dto 변환 테스트")
     public void checkLottoResultDto() {
         LottoResultEntity lre = new LottoResultEntity(1101, "1,2,3,4,5,6,7", 1000000L, LocalDate.now());
+        roundProvider.updateRound(1101);
 
-        when(resultRepository.findTopByOrderByRoundDesc()).thenReturn(Mono.just(lre));
+        when(resultRepository.findByRound(1101)).thenReturn(Mono.just(lre));
 
         LottoResultResDto resultResDto = resultService.getRecentLottoResult().block();
         Assertions.assertEquals(lre.getRound(), resultResDto.getRound());
