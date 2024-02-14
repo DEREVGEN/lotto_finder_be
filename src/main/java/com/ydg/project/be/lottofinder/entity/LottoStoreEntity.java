@@ -36,4 +36,8 @@ public class LottoStoreEntity {
         this.storeFid = storeFid;
         this.location = location;
     }
+
+    public void addRound(int round) {
+        winRounds.add(round);
+    }
 }
