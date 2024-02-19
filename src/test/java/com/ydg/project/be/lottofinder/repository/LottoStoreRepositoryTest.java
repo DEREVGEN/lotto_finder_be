@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeospatialIndex;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,6 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 
 @DataMongoTest
-@TestPropertySource("classpath:application-test.yaml")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LottoStoreRepositoryTest {
 

@@ -1,11 +1,11 @@
 package com.ydg.project.be.lottofinder.batch.extractor;
 
 import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@TestPropertySource("classpath:application-test.yaml")
 class LottoResultExtractorTest {
 
     @Autowired

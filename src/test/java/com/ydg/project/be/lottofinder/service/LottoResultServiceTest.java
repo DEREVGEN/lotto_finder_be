@@ -19,12 +19,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles("test")
-@TestPropertySource("classpath:application-test.yaml")
 class LottoResultServiceTest {
 
     @Autowired

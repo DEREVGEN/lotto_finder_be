@@ -1,0 +1,13 @@
+server:
+  port: 8091
+spring:
+  profiles:
+    active: test
+  data:
+    mongodb:
+      database: testdb
+de:
+  flap-doodle:
+    mongodb:
+      embedded:
+        version: 4.4.1

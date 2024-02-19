@@ -1,3 +1,0 @@
-server.port=8091
-spring.data.mongodb.database=testdb
-de.flapdoodle.mongodb.embedded.version=4.4.1
