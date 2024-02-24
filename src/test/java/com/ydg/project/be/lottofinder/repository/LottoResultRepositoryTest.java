@@ -46,7 +46,7 @@ class LottoResultRepositoryTest {
     @DisplayName("최신의 로또 결과 데이터 불러오기")
     public void shouldGetRecentResultTest() {
         Mono<LottoResultEntity> lottoResultEntityMono = resultRepository
-                .findTopByOrderByRoundDesc().doOnNext(System.out::println);
+                .findTopByOrderByRoundDesc();
 
         StepVerifier
                 .create(lottoResultEntityMono)
