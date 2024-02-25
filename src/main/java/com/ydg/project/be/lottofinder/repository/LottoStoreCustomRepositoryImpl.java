@@ -7,8 +7,10 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +27,13 @@ public class LottoStoreCustomRepositoryImpl implements LottoStoreCustomRepositor
 
         return mongoTemplate
                 .find(query, LottoStoreEntity.class);
+    }
+
+    @Override
+    public Mono<Void> updateStoreWinRounds(int storeFId, int round) {
+        Criteria criteria = Criteria.where("storeFid").is(storeFId);
+        Update update = new Update().push("winRounds", round);
+        return mongoTemplate.updateFirst(Query.query(criteria), update, LottoStoreEntity.class).then();
     }
 }
 
