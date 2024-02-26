@@ -1,6 +1,5 @@
 package com.ydg.project.be.lottofinder.util;
 
-import com.mongodb.client.model.geojson.Position;
 import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
 import com.ydg.project.be.lottofinder.batch.dto.LottoStoreDto;
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
@@ -10,10 +9,7 @@ import com.ydg.project.be.lottofinder.dto.WinStoreResDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-
-import java.util.List;
 
 public class EntityDtoUtil {
     public static LottoResultEntity toEntity(LottoResultDto resultDto) {
@@ -54,7 +50,7 @@ public class EntityDtoUtil {
     }
 
     public static WinStoreEntity toEntity(WinStoreDto winStoreDto, int round) {
-        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), round, winStoreDto.getStoreFId());
+        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), round, winStoreDto.getStoreFid());
 
         return winStore;
     }

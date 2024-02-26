@@ -10,6 +10,6 @@ import lombok.ToString;
 public class WinStoreDto {
 
     private String name;
-    private int storeFId;
+    private int storeFid;
     private boolean isAuto;
 }

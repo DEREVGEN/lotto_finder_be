@@ -2,20 +2,14 @@ package com.ydg.project.be.lottofinder.batch.service;
 
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
-import com.ydg.project.be.lottofinder.entity.LottoStoreEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
 import com.ydg.project.be.lottofinder.batch.extractor.LottoResultExtractor;
 import com.ydg.project.be.lottofinder.batch.extractor.WinStoreExtractor;
-import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
 import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -52,7 +46,7 @@ public class LottoSaveService {
 
         return winStoreRepository.save(winStore)
                 .flatMap(
-                        savedWinStore -> lottoStoreRepository.updateStoreWinRounds(winStoreDto.getStoreFId(), round)
+                        savedWinStore -> lottoStoreRepository.updateStoreWinRounds(winStoreDto.getStoreFid(), round)
                                 .thenReturn(savedWinStore)
                 );
     }

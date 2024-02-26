@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -28,11 +26,11 @@ class WinStoreExtractorTest {
         StepVerifier.create(winStoreDtoFlux)
                 .assertNext(winStoreDto -> {
                     assertEquals(winStoreDto.getName(), "행운식품");
-                    assertEquals(winStoreDto.getStoreFId(), 11120016);
+                    assertEquals(winStoreDto.getStoreFid(), 11120016);
                 })
                 .assertNext(winStoreDto -> {
                     assertEquals(winStoreDto.getName(), "로또백화점 홍은점");
-                    assertEquals(winStoreDto.getStoreFId(), 11140275);
+                    assertEquals(winStoreDto.getStoreFid(), 11140275);
                 })
                 .expectNextCount(20)
                 .verifyComplete();

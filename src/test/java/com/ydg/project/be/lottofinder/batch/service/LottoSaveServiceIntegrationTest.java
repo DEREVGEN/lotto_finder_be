@@ -51,19 +51,19 @@ class LottoSaveServiceIntegrationTest {
     public void updateRecentRoundOfStoreAfterSavingRecentWinStore() throws IOException {
 
         WinStoreDto winStoreDto = new WinStoreDto();
-        winStoreDto.setStoreFId(1);
+        winStoreDto.setStoreFid(1);
         winStoreDto.setName("xx가게");
         winStoreDto.setAuto(true);
 
         LottoStoreEntity lottoStoreEntity = LottoStoreEntity.builder()
-                .storeFid(winStoreDto.getStoreFId())
+                .storeFid(winStoreDto.getStoreFid())
                 .build();
 
         // lottoStore 이 저장되어 있다고 하고 가정,
         lottoStoreRepository.save(lottoStoreEntity).block();
 
 
-        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), 1000, winStoreDto.getStoreFId());
+        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), 1000, winStoreDto.getStoreFid());
 
         // winStore에 대한 정보 추출 mock
         when(winStoreExtractor.getWinStoreDto(1000)).thenReturn(Flux.just(winStoreDto));
@@ -78,7 +78,7 @@ class LottoSaveServiceIntegrationTest {
 
         WinStoreEntity winStoreEntity = winStoreEntityArgumentCaptor.getValue();
         assertEquals(winStoreEntity.getRound(), 1000);
-        assertEquals(winStoreEntity.getStoreFid(), winStoreDto.getStoreFId());
+        assertEquals(winStoreEntity.getStoreFid(), winStoreDto.getStoreFid());
         assertEquals(winStoreEntity.isAuto(), winStoreDto.isAuto());
 
 

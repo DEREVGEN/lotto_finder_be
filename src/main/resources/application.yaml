@@ -1,3 +1,0 @@
-#application.yml
-spring:
-  config.activate.on-profile: dev, deploy

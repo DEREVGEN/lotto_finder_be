@@ -36,7 +36,7 @@ public class WinStoreExtractor {
 
             winStoreDto.setName(name);
             winStoreDto.setAuto(isAuto);
-            winStoreDto.setStoreFId(storeUniqueId);
+            winStoreDto.setStoreFid(storeUniqueId);
             winStoreDtoList.add(winStoreDto);
         }
 
