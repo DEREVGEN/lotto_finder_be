@@ -46,7 +46,7 @@
             username: ${{ secrets.SSH_USERNAME }}
             key: ${{ secrets.SSH_KEY }}
             script: |
-              sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-              sudo docker pull dearon/lottofinder-server:latest
-#              cd /srv/lottofinder
+#              sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+#              sudo docker pull dearon/lottofinder-server:latest
+              cd /srv/lottofinder
 #              sudo docker compose up -d --no-deps --build lottofinder-server
