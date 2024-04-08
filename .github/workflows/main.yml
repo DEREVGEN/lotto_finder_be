@@ -46,8 +46,8 @@
             username: ${{ secrets.SSH_USERNAME }}
             key: ${{ secrets.SSH_KEY }}
             script: |
-              sudo docker stop lottofinder
-              sudo docker rm lottofinder
               sudo docker image rm ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
               sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-              sudo docker run -d -p 8080:8080 --name lottofinder ${{ secrets.DOCKER_USERNAME }}/lottofinder:lastest
+              sudo docker pull dearon/lottofinder-server:latest
+              cd /srv/lottofinder
+              docker-compose up -d --no-deps --build lottofinder-server
