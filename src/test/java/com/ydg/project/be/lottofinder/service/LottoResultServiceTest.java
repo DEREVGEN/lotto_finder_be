@@ -56,6 +56,8 @@ class LottoResultServiceTest {
             lreList.add(new LottoResultEntity(round, "1,2,3,4,5,6,7", 100000L, LocalDate.now()));
         }
 
+        roundProvider.updateRound(1010);
+
         when(resultRepository.findTop7ByRoundLessThanEqualOrderByRoundDesc(1010)).thenReturn(Flux.fromIterable(lreList));
         LottoResultResDto resultResDto = resultService.getLottoResults(1010).block();
 
