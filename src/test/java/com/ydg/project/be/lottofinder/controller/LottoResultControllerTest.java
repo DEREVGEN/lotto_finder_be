@@ -1,6 +1,7 @@
 package com.ydg.project.be.lottofinder.controller;
 
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
+import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,9 @@ class LottoResultControllerTest {
     WebTestClient webTestClient;
 
     @Autowired
+    RecentRoundProvider recentRoundProvider;
+
+    @Autowired
     LottoResultRepository lottoResultRepository;
 
     @BeforeAll
@@ -32,8 +36,9 @@ class LottoResultControllerTest {
 
             lottoResultRepository.save(lottoResult).block();
         }
-    }
 
+        recentRoundProvider.updateRound(1100);
+    }
 
     @Test
     @DisplayName("해당 round에 대한 로또 결과 response 테스트")
@@ -45,6 +50,26 @@ class LottoResultControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.round", 1100);
+    }
+
+    @Test
+    @DisplayName("로또 결과 조회, 해당 round에 대한 존재하는 회차 보다 작을 경우 - response 에러 테스트")
+    public void checkLowerLottoReulstErrorResponseWithRound() {
+
+        webTestClient.get()
+                .uri("/lotto/result/{round}", 899)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DisplayName("로또 결과 조회, 해당 round에 대한 존재하는 회차 보다 클 경우 - response 에러 테스트2")
+    public void checkUpperLottoReulstErrorResponseWithRound() {
+
+        webTestClient.get()
+                .uri("/lotto/result/{round}", 1101)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
@@ -80,6 +105,26 @@ class LottoResultControllerTest {
                 .jsonPath("$[4].round").isEqualTo(1096)
                 .jsonPath("$[5].round").isEqualTo(1095)
                 .jsonPath("$[6].round").isEqualTo(1094);
+    }
+
+    @Test
+    @DisplayName("로또 다수 조회, 해당 round에 대한 존재하는 회차보다 작을 경우 response 에러 테스트 - v2")
+    public void checkLowerLottoResultsErrorResponseWithRoundV2() {
+
+        webTestClient.get()
+                .uri("/lotto/result/v2/{round}/multiple", 899)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DisplayName("로또 다수 조회, 해당 round에 대한 존재하는 회차보다 클 경우 response 에러 테스트 - v2")
+    public void checkUpperLottoResultsErrorResponseWithRoundV2() {
+
+        webTestClient.get()
+                .uri("/lotto/result/v2/{round}/multiple", 1101)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
 }
