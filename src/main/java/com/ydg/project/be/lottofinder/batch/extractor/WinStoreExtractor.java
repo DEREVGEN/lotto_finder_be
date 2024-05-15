@@ -1,6 +1,7 @@
 package com.ydg.project.be.lottofinder.batch.extractor;
 
 import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.batch.exception.WinStoreNotUpdatedException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,14 +18,26 @@ public class WinStoreExtractor {
 
     private final String url = "https://dhlottery.co.kr/store.do?method=topStore&pageGubun=L645&drwNo=";
 
-    public Flux<WinStoreDto> getWinStoreDto(int round) throws IOException {
-        Document document = Jsoup
-                .connect(url + round)
-                .get();
+    public Flux<WinStoreDto> getWinStoreDto(int round){
+        Document document = null;
+        try {
+            document = Jsoup
+                    .connect(url + round)
+                    .get();
+        } catch (IOException e) {
+            return Flux.error(e);
+        }
 
         Elements winStoreRowElements = document.selectXpath("(//table[@class='tbl_data tbl_data_col'])[1]/tbody/tr");
 
         List<WinStoreDto> winStoreDtoList = new ArrayList<>();
+
+        // 테이블의 첫번째 요소.
+        Element firstElement = winStoreRowElements.first();
+        // 데이터가 갱신이 안된 경우
+        if (firstElement.selectXpath("td[1]").hasClass("nodata")) {
+            return Flux.error(new WinStoreNotUpdatedException("Cannot parse win store of round: " + round));
+        }
 
         for (Element row : winStoreRowElements) {
             WinStoreDto winStoreDto = new WinStoreDto();
@@ -37,9 +50,16 @@ public class WinStoreExtractor {
             winStoreDto.setName(name);
             winStoreDto.setAuto(isAuto);
             winStoreDto.setStoreFid(storeUniqueId);
+            winStoreDto.setRound(round);
             winStoreDtoList.add(winStoreDto);
         }
 
         return Flux.fromIterable(winStoreDtoList);
+    }
+
+    public Flux<WinStoreDto> getWinStoreDtoDeferred(int round) {
+        return Flux.defer(() -> {
+            return getWinStoreDto(round);
+        });
     }
 }

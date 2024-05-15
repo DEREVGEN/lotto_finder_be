@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.List;
 
 @DataMongoTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -71,6 +72,19 @@ class LottoStoreRepositoryTest {
                 .expectNextCount(1)
                 .expectComplete()
                 .verify(Duration.ofSeconds(3));
+    }
+
+    @Test
+    @DisplayName("당첨 회차 업데이트 테스트")
+    public void checkUpdateWinRoundsTest() {
+        Mono<LottoStoreEntity> lottoStoreEntityMono = storeRepository.updateStoreWinRounds(1, 1110)
+                            .then(storeRepository.updateStoreWinRounds(1, 1120))
+                            .then(storeRepository.updateStoreWinRounds(1, 1110))
+                            .then(storeRepository.findByStoreFid(1));
+
+        StepVerifier.create(lottoStoreEntityMono)
+                .assertNext(lottoStoreEntity -> Assertions.assertEquals(lottoStoreEntity.getWinRounds(), List.of(1, 1110, 1120)))
+                .verifyComplete();
     }
 
 }
