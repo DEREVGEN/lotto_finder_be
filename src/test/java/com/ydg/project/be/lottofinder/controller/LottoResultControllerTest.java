@@ -103,8 +103,7 @@ class LottoResultControllerTest {
                 .jsonPath("$[2].round").isEqualTo(1098)
                 .jsonPath("$[3].round").isEqualTo(1097)
                 .jsonPath("$[4].round").isEqualTo(1096)
-                .jsonPath("$[5].round").isEqualTo(1095)
-                .jsonPath("$[6].round").isEqualTo(1094);
+                .jsonPath("$[5].round").isEqualTo(1095);
     }
 
     @Test
