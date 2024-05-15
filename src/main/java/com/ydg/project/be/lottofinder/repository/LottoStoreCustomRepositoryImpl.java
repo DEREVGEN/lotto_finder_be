@@ -30,9 +30,9 @@ public class LottoStoreCustomRepositoryImpl implements LottoStoreCustomRepositor
     }
 
     @Override
-    public Mono<Void> updateStoreWinRounds(int storeFId, int round) {
-        Criteria criteria = Criteria.where("storeFid").is(storeFId);
-        Update update = new Update().push("winRounds", round);
+    public Mono<Void> updateStoreWinRounds(int storeFid, int round) {
+        Criteria criteria = Criteria.where("storeFid").is(storeFid);
+        Update update = new Update().addToSet("winRounds", round);
         return mongoTemplate.updateFirst(Query.query(criteria), update, LottoStoreEntity.class).then();
     }
 }
