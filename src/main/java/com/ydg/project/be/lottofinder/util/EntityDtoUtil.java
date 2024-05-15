@@ -49,8 +49,8 @@ public class EntityDtoUtil {
         return lottoStore;
     }
 
-    public static WinStoreEntity toEntity(WinStoreDto winStoreDto, int round) {
-        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), round, winStoreDto.getStoreFid());
+    public static WinStoreEntity toEntity(WinStoreDto winStoreDto) {
+        WinStoreEntity winStore = new WinStoreEntity(winStoreDto.isAuto(), winStoreDto.getRound(), winStoreDto.getStoreFid());
 
         return winStore;
     }
