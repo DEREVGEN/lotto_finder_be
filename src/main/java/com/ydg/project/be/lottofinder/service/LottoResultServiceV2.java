@@ -29,7 +29,7 @@ public class LottoResultServiceV2 {
         }
 
         return resultRepository
-                .findTop7ByRoundLessThanEqualOrderByRoundDesc(round)
+                .findTop6ByRoundLessThanEqualOrderByRoundDesc(round)
                 .map(EntityDtoUtil::toDto);
     }
 }

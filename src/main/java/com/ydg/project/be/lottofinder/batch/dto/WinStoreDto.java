@@ -12,4 +12,5 @@ public class WinStoreDto {
     private String name;
     private int storeFid;
     private boolean isAuto;
+    private int round;
 }

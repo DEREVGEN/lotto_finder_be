@@ -1,85 +1,182 @@
 package com.ydg.project.be.lottofinder.batch.service;
 
+import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
+import com.ydg.project.be.lottofinder.batch.dto.WinStoreDto;
+import com.ydg.project.be.lottofinder.batch.exception.LottoResultNotUpdatedException;
+import com.ydg.project.be.lottofinder.batch.exception.WinStoreNotUpdatedException;
+import com.ydg.project.be.lottofinder.batch.extractor.LottoResultExtractor;
+import com.ydg.project.be.lottofinder.batch.extractor.WinStoreExtractor;
 import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.entity.WinStoreEntity;
 import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
+import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
+import com.ydg.project.be.lottofinder.repository.LottoStoreRepository;
 import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
+import com.ydg.project.be.lottofinder.util.EntityDtoUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import java.io.IOException;
-import java.time.LocalDate;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LottoScheduleServiceTest {
 
-    @Autowired
-    RecentRoundProvider recentRoundProvider;
-
-    @Autowired
+    @InjectMocks
     LottoScheduleService lottoScheduleService;
-
-    @MockBean
-    LottoSaveService lottoSaveService;
-
-    @MockBean
+    @Mock
     WinStoreRepository winStoreRepository;
+    @Mock
+    LottoResultRepository lottoResultRepository;
+    @Mock
+    LottoStoreRepository lottoStoreRepository;
 
-    @Captor
-    ArgumentCaptor<Integer> captor;
+    @Mock
+    LottoResultExtractor lottoResultExtractor;
+    @Mock
+    WinStoreExtractor winStoreExtractor;
+
+    RecentRoundProvider roundProvider;
+
+
+    // 모든 테스트 케이스를 1110회차를 최신 회차로 가정.
+    @BeforeEach
+    public void init() {
+        roundProvider = new RecentRoundProvider();
+        roundProvider.updateRound(1110);
+
+        lottoScheduleService = new LottoScheduleService(roundProvider, winStoreRepository, lottoResultRepository, lottoStoreRepository, lottoResultExtractor, winStoreExtractor);
+    }
+
 
     @Test
-    @DisplayName("lotto result parsing 후, 저장하고 나서, 최신회차가 업데이트 되는지 테스트")
-    public void checkLatestLottoRoundAfterLottoResultParsing() throws IOException, InterruptedException {
+    @DisplayName("로또 결과 API 로부터 데이터 획득 및 처리 - 성공")
+    public void checkGetLottoResultFromApiTest() {
+        LottoResultDto lottoResultDtoMock = mock(LottoResultDto.class);
+        when(lottoResultExtractor.getLottoResultDeferred(eq(1111))).thenReturn(Mono.just(lottoResultDtoMock));
 
-        LottoResultEntity lottoResultEntity = new LottoResultEntity(1000, "1,2,3,4,5,6,7", 123456L, LocalDate.now());
+        LottoResultEntity lottoResultEntityMock = mock(LottoResultEntity.class);
+        when(lottoResultRepository.save(any(LottoResultEntity.class))).thenReturn(Mono.just(lottoResultEntityMock));
 
-        recentRoundProvider.updateRound(1000);
-        when(lottoSaveService.saveLottoResult(eq(1001)))
-                .thenReturn(Mono.just(lottoResultEntity));
-        when(lottoSaveService.saveLottoResult(eq(1002)))
-                .thenReturn(Mono.just(lottoResultEntity));
-        when(lottoSaveService.saveLottoResult(eq(1003)))
-                .thenReturn(Mono.just(lottoResultEntity));
-        // 최신회차 초과시 에러
-        when(lottoSaveService.saveLottoResult(eq(1004)))
-                .thenReturn(Mono.error(new RuntimeException("can not parsing result of round : " + 1004)));
+        StepVerifier
+                .create(lottoScheduleService.saveRecentRoundLottoResultFromLottoAPI())
+                .expectNext(lottoResultEntityMock)
+                .verifyComplete();
 
-        lottoScheduleService.saveRecentRoundLottoResultFromLottoAPI();
-
-        assertEquals(recentRoundProvider.getLatestLottoRound(), 1003);
+        assertEquals(roundProvider.getLatestLottoRound(), 1111);
     }
 
     @Test
-    @DisplayName("당첨가게 저장시, 데이터베이스로부터 최신의 회차를 얻고, 로또 결과의 최신회차까지 저장 테스트")
-    public void checkSaveWinStoreFromDBRoundToRecentRound() throws IOException {
-        // 로또 결과의 최신회차
-        recentRoundProvider.updateRound(1000);
+    @DisplayName("로또 결과 API 로부터 데이터 획득 및 처리 - 에러, 1분 동안 60회의 시도 모두 실패시")
+    public void checkGetLottoResultFromApiAllFailedTest() {
+        when(lottoResultExtractor.getLottoResultDeferred(eq(1111)))
+                .thenReturn(Mono.error(LottoResultNotUpdatedException::new));
 
-        // DB에 저장된 가장 나중의 회차 데이터
-        WinStoreEntity winStoreEntity = new WinStoreEntity(true, 995, 1234);
-
-        for (int round = 996; round <= 1000; round++) {
-            when(lottoSaveService.saveWinStore(round)).thenReturn(Flux.just(new WinStoreEntity(true, round, 1234)));
-        }
-
-        when(winStoreRepository.findTopByOrderByRoundDesc()).thenReturn(Mono.just(winStoreEntity));
-
-        lottoScheduleService.saveRecentRoundLottoWinStoresFromLottoWeb();
+        StepVerifier.withVirtualTime(() -> lottoScheduleService.saveRecentRoundLottoResultFromLottoAPI())
+                .thenAwait(Duration.ofMinutes(60))
+                .expectError()
+                .verify();
     }
+
+    @Test
+    @DisplayName("로또 결과 API 로부터 데이터 획득 및 처리 - 에러, 4회의 실패 시도 후 성공")
+    public void checkGetLottoResultFromApiSomeFailedTest() {
+
+        LottoResultDto lottoResultDtoMock = mock(LottoResultDto.class);
+
+        Mono<LottoResultDto> deferMock = Mono.defer(() -> {
+            return lottoResultExtractor.getLottoResult(1111);
+        });
+
+        when(lottoResultExtractor.getLottoResultDeferred(1111)).thenReturn(deferMock);
+
+        when(lottoResultExtractor.getLottoResult(1111))
+                .thenReturn(Mono.error(LottoResultNotUpdatedException::new))
+                .thenReturn(Mono.error(LottoResultNotUpdatedException::new))
+                .thenReturn(Mono.error(LottoResultNotUpdatedException::new))
+                .thenReturn(Mono.just(lottoResultDtoMock));
+
+        LottoResultEntity lottoResultEntityMock = mock(LottoResultEntity.class);
+        when(lottoResultRepository.save(any(LottoResultEntity.class))).thenReturn(Mono.just(lottoResultEntityMock));
+
+        StepVerifier
+                .withVirtualTime(() -> lottoScheduleService.saveRecentRoundLottoResultFromLottoAPI())
+                .thenAwait(Duration.ofMinutes(4))
+                .expectNext(lottoResultEntityMock)
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("당첨 가게 결과 API 로부터 데이터 획득 및 처리 - 에러, 4회의 실패 시도 후 성공")
+    public void checkUpdateWinRoundsOfLottoStoreDuringSavingWinStoreSomeFailedTest() {
+
+        WinStoreDto winStoreDtoMock = new WinStoreDto();
+        winStoreDtoMock.setRound(1111);
+        winStoreDtoMock.setStoreFid(1234);
+
+        WinStoreEntity winStoreEntityMock = EntityDtoUtil.toEntity(winStoreDtoMock);
+
+        Flux<WinStoreDto> parsingWinStoreDeferMock = Flux.defer(() -> {
+            return winStoreExtractor.getWinStoreDto(1111);
+        });
+
+        when(winStoreExtractor.getWinStoreDtoDeferred(1111)).thenReturn(parsingWinStoreDeferMock);
+
+        when(winStoreExtractor.getWinStoreDto(1111))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new))
+                .thenReturn(Flux.just(winStoreDtoMock));
+
+        when(winStoreRepository.save(any(WinStoreEntity.class))).thenReturn(Mono.just(winStoreEntityMock));
+        when(lottoStoreRepository.updateStoreWinRounds(eq(1234), eq(1111))).thenReturn(Mono.empty());
+
+        roundProvider.updateRound(1111);
+        StepVerifier.withVirtualTime(() -> lottoScheduleService.saveWinStores(1110))
+                .thenAwait(Duration.ofMinutes(4))
+                .expectNext(winStoreEntityMock)
+                .verifyComplete();
+    }
+
+
+    @Test
+    @DisplayName("당첨 가게 결과 API 로부터 데이터 획득 및 처리 - 에러, 모두 실패")
+    public void checkUpdateWinRoundsOfLottoStoreDuringSavingWinStoreAllFailedTest() {
+
+        WinStoreDto winStoreDtoMock = new WinStoreDto();
+        winStoreDtoMock.setRound(1111);
+        winStoreDtoMock.setStoreFid(1234);
+
+        Flux<WinStoreDto> parsingWinStoreDeferMock = Flux.defer(() -> {
+            return winStoreExtractor.getWinStoreDto(1111);
+        });
+
+        when(winStoreExtractor.getWinStoreDtoDeferred(1111)).thenReturn(parsingWinStoreDeferMock);
+
+        when(winStoreExtractor.getWinStoreDto(1111))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new))
+                .thenReturn(Flux.error(WinStoreNotUpdatedException::new));
+
+        roundProvider.updateRound(1111);
+        StepVerifier.withVirtualTime(() -> lottoScheduleService.saveWinStores(1110))
+                .thenAwait(Duration.ofMinutes(60))
+                .expectError()
+                .verify();
+    }
+
 
 }

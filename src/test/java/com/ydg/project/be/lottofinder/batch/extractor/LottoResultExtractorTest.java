@@ -1,29 +1,30 @@
 package com.ydg.project.be.lottofinder.batch.extractor;
 
 import com.ydg.project.be.lottofinder.batch.dto.LottoResultDto;
+import com.ydg.project.be.lottofinder.batch.exception.LottoResultNotUpdatedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class LottoResultExtractorTest {
 
-    @Autowired
+
     LottoResultExtractor lottoResultExtractor;
+
+    @BeforeEach
+    public void init() {
+        lottoResultExtractor = new LottoResultExtractor();
+    }
 
     @Test
     @DisplayName("로또 결과 불러오기 & 파싱 테스트")
-    public void checkLottoResultParsingTest() throws IOException, InterruptedException {
+    public void checkLottoResultParsingTest() {
         LottoResultDto lottoResultDto = lottoResultExtractor.getLottoResult(1000).block();
 
         assertEquals(lottoResultDto.getRound(), 1000);
@@ -40,12 +41,12 @@ class LottoResultExtractorTest {
 
     @Test
     @DisplayName("로또 결과 불러오기 & 파싱 오류 테스트")
-    public void checkErrorLottoResultParsingTest() throws IOException, InterruptedException {
+    public void checkErrorLottoResultParsingTest() {
         // lottoResultExtractor.getLottoResult(-1) 호출 시 런타임 예외가 발생
         Mono<LottoResultDto> lottoResultDtoMono = lottoResultExtractor.getLottoResult(-1);
 
         StepVerifier.create(lottoResultDtoMono)
-                .expectError(RuntimeException.class)
+                .expectError(LottoResultNotUpdatedException.class)
                 .verify();
     }
 

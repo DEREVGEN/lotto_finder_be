@@ -10,14 +10,13 @@ import com.ydg.project.be.lottofinder.repository.WinStoreRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,16 +30,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LottoStoreServiceTest {
 
-    @Autowired
+    @InjectMocks
     LottoStoreService lottoStoreService;
 
-    @MockBean
+    @Mock
     LottoStoreRepository lottoStoreRepository;
 
-    @MockBean
+    @Mock
     WinStoreRepository winStoreRepository;
 
     @Captor

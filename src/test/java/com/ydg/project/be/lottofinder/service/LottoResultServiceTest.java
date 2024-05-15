@@ -5,11 +5,14 @@ import com.ydg.project.be.lottofinder.entity.LottoResultEntity;
 import com.ydg.project.be.lottofinder.provider.RecentRoundProvider;
 import com.ydg.project.be.lottofinder.repository.LottoResultRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,17 +22,23 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LottoResultServiceTest {
 
-    @Autowired
+    @InjectMocks
     LottoResultService resultService;
 
-    @MockBean
+    @Mock
     LottoResultRepository resultRepository;
 
-    @Autowired
     RecentRoundProvider roundProvider;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        roundProvider = new RecentRoundProvider();
+        resultService = new LottoResultService(resultRepository, roundProvider);
+    }
 
     @Test
     @DisplayName("Dto 변환 테스트")
@@ -72,9 +81,5 @@ class LottoResultServiceTest {
             Assertions.assertEquals(lreList.get(i).getWinPrize(), resultResDto.getLastLottoResults().get(i-1).getWinPrize());
             Assertions.assertEquals(lreList.get(i).getRound(), resultResDto.getLastLottoResults().get(i-1).getRound());
         }
-
     }
-
-
-  
 }
